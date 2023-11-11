@@ -27,10 +27,7 @@ def plot_three_plots(x1, x2, x3):
 
 
 
-# REWRITE THIS FUNCTION
-# plot1 = data_pb_average   plot2 = data_pb_variance    plot3 = ?
-#
-#
+# currently dead function
 def six_visualization(title, parameter_list, plot1, plot2, plot3, extra_plot1, extra_plot2, extra_plot3):
     y_ticks = parameter_list[0]
     x_ticks = parameter_list[1]
@@ -112,32 +109,21 @@ def six_visualization(title, parameter_list, plot1, plot2, plot3, extra_plot1, e
         plt.show()
 
 
-def single_visualzation(data_matrix, title, x_ticks, y_ticks, xlabel="xläbel", ylabel="yläbel", color='viridis', dontSaveOnlyPlot = False):
-    #x_Matrix = np.empty(shape=(n, n))
-    #for idx, x in enumerate(x_ticks):
-    #    for idy, y in enumerate(y_ticks):
-    #        x_Matrix[idx, idy] =
-
+def single_visualzation(data_matrix, title, x_ticks, y_ticks, xlabel="xläbel", ylabel="yläbel", color='viridis', center=None, dontSaveOnlyPlot = False):
     dataframe = pandas.DataFrame(data_matrix, index=x_ticks, columns=y_ticks)
-
 
     fig = plt.figure()
     ax = plt.axes()
 
-    # sns.heatmap(data_matrix, ax=ax, cbar=True, cmap='viridis', xticklabels='auto', yticklabels=y_ticks)
-    svm = sns.heatmap(dataframe, ax=ax, cbar=True, cmap=color, xticklabels=7, yticklabels=7)
+    svm = sns.heatmap(dataframe, ax=ax, cbar=True, cmap=color, xticklabels=7, yticklabels=7, center=center)
 
     plt.title(title, fontsize =20)
-    plt.xlabel(xlabel, fontsize=15)  # x-axis label with fontsize 15
-    plt.ylabel(ylabel, fontsize=15)  # y-axis label with fontsize 15
+    plt.xlabel(xlabel, fontsize=15)
+    plt.ylabel(ylabel, fontsize=15)
     # plt.xticks(rotation=45)
     plt.yticks(rotation=0)
 
     plt.savefig("testing\pictures/Figure " + time.strftime("%Y-%m-%d %H%M%S") + "---" + str(title) + ".png", bbox_inches="tight")
-
-
-
-
 
 
 def plot_and_data_analysis(filename):
@@ -171,8 +157,6 @@ def plot_and_data_analysis(filename):
     single_visualzation(first_passage_time, "fpt", x_ticks, y_ticks)
 
 
-
-# plot_and_data_analysis("sim_data_only_pb___2023-11-05 172250.npy")
 
 
 if False:

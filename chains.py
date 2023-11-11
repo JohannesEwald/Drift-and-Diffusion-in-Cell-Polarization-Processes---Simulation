@@ -1,11 +1,6 @@
 import math
 import random
-
 import numpy as np
-
-# data type of some array is currently int_short -> (-32k, 32k)
-# think about rate change for more chain_length in update_probability_list !!!
-# after creating instance always update to have probabilities!
 
 
 class Parameters:
@@ -13,7 +8,7 @@ class Parameters:
     def __init__(self, half_chain_length=1, a=1.0, b=1.0, c=1.0, F=1.0, G=1.0, H=1.0):   #int, a: float, b: float, c: float, F: float, G: float, H: float):
         self.half_chain_length = half_chain_length
         self.a, self.b, self.c, self.F, self.G, self.H = a, b, c, F, G, H
-        self.probability_list = np.array([0.0] * 6)  # [a+, a-, b+, b-, c+, c-]         # a+ is A- -> A+    and     c+ is AB -> BB
+        self.probability_list = np.array([0.0] * 6)  # [a+, a-, b+, b-, c+, c-]
         self.activity_probability = 0
         self.flip_cases_probabilities = []
         self.conversion_probability = 0
@@ -41,7 +36,7 @@ class Parameters:
             self.probability_list[2 * j + 1] = self.probability_list[2 * j] + base_rate[j] * math.exp(-exponential_rate[j] / 2)     # 1 3 5 in array are: a-, b-, c-
 
         self.Z = self.probability_list[-1]
-        print(self.probability_list)
+        # print(self.probability_list)
 
         # normalize for rate -> probability
         self.probability_list = np.array(self.probability_list) / self.probability_list[-1]     # normalization
@@ -77,8 +72,6 @@ class ChainCollection:
 
         self.phase_Barriers[chain_position] = self.phase_Barriers[chain_position] + pb_change
         self.ATPs[chain_position] = self.ATPs[chain_position] + abs(pb_change)
-        # self.phase_Barrier_History[time, chain_position] = self.phase_Barrier_History[time - 1, chain_position] + pb_change   # THESE ARE VERY LARGE --> TOO MUCH RAM
-        # self.chains_History.append(np.copy(self.chains))                                                                      # THESE ARE VERY LARGE --> TOO MUCH RAM
 
     def charge_flip(self, chain_position: int):
         flip_prob = random.random()
@@ -95,28 +88,22 @@ class ChainCollection:
             flip_position += self.parameters.half_chain_length
             self.chains[chain_position, flip_position] = 0
 
-    # CHECK IF '<', '>' are correct!!!
+
     def phase_barrier_shift(self, chain_position: int, time: int):
-        if self.chains[chain_position, self.parameters.half_chain_length - 1] == 1:         # [..., A- | B? , ...]
-            if self.chains[chain_position, self.parameters.half_chain_length] == 0:         # [..., A- | B+ , ...]
+        if self.chains[chain_position, self.parameters.half_chain_length - 1] == 1:
+            if self.chains[chain_position, self.parameters.half_chain_length] == 0:
                 if random.random() < self.parameters.conversion_probability:
                     self.chains[chain_position] = np.roll(self.chains[chain_position], -1)
                     self.chains[chain_position, -1] = 1 if random.random() < self.parameters.B_thermalization_probability else 0                    # thermalized B gets added to the right due to shift
-                    # self.phase_Barrier_History[time][chain_position] = self.phase_Barrier_History[time - 1][chain_position] + 1
 
                     return 1
-        elif self.chains[chain_position, self.parameters.half_chain_length] == 1:           # [..., A+ | B- , ...]
+        elif self.chains[chain_position, self.parameters.half_chain_length] == 1:
             if random.random() > self.parameters.conversion_probability:
                 self.chains[chain_position] = np.roll(self.chains[chain_position], 1)
                 self.chains[chain_position, 0] = 1 if random.random() < self.parameters.A_thermalization_probability else 0
-                # self.phase_Barrier_History[time][chain_position] = self.phase_Barrier_History[time - 1][chain_position] + 1
                 return -1
         return 0
 
-
-###
-def simulation(chain_collection: ChainCollection):
-    pass
 
 
 
